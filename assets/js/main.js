@@ -1,15 +1,10 @@
 /*
-	Visualize by TEMPLATED
+	Projection by TEMPLATED
 	templated.co @templatedco
 	Released for free under the Creative Commons Attribution 3.0 license (templated.co/license)
 */
 
-$(function() {
-
-	// Vars.
-		var	$window = $(window),
-			$body = $('body'),
-			$wrapper = $('#wrapper');
+(function($) {
 
 	// Breakpoints.
 		skel.breakpoints({
@@ -20,30 +15,52 @@ $(function() {
 			xsmall:	'(max-width: 480px)'
 		});
 
-	// Disable animations/transitions until everything's loaded.
-		$body.addClass('is-loading');
+	$(function() {
 
-		$window.on('load', function() {
-			$body.removeClass('is-loading');
-		});
+		var	$window = $(window),
+			$body = $('body');
 
-	// Poptrox.
-		$window.on('load', function() {
+		// Disable animations/transitions until the page has loaded.
+			$body.addClass('is-loading');
 
-			$('.thumbnails').poptrox({
-				onPopupClose: function() { $body.removeClass('is-covered'); },
-				onPopupOpen: function() { $body.addClass('is-covered'); },
-				baseZIndex: 10001,
-				useBodyOverflow: false,
-				usePopupEasyClose: true,
-				overlayColor: '#000000',
-				overlayOpacity: 0.75,
-				popupLoaderText: '',
-				fadeSpeed: 500,
-				usePopupDefaultStyling: false,
-				windowMargin: (skel.breakpoint('small').active ? 5 : 50)
+			$window.on('load', function() {
+				window.setTimeout(function() {
+					$body.removeClass('is-loading');
+				}, 100);
 			});
 
-		});
+		// Prioritize "important" elements on medium.
+			skel.on('+medium -medium', function() {
+				$.prioritize(
+					'.important\\28 medium\\29',
+					skel.breakpoint('medium').active
+				);
+			});
 
-});
+	// Off-Canvas Navigation.
+
+		// Navigation Panel.
+			$(
+				'<div id="navPanel">' +
+					$('#nav').html() +
+					'<a href="#navPanel" class="close"></a>' +
+				'</div>'
+			)
+				.appendTo($body)
+				.panel({
+					delay: 500,
+					hideOnClick: true,
+					hideOnSwipe: true,
+					resetScroll: true,
+					resetForms: true,
+					side: 'left'
+				});
+
+		// Fix: Remove transitions on WP<10 (poor/buggy performance).
+			if (skel.vars.os == 'wp' && skel.vars.osVersion < 10)
+				$('#navPanel')
+					.css('transition', 'none');
+
+	});
+
+})(jQuery);
